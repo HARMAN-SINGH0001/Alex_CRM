@@ -12,7 +12,7 @@ _meta_lock = threading.Lock()
 from openai import OpenAI
 
 # ── OpenRouter client ────────────────────────────────────────────────
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "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")
 
 def make_openrouter_client(api_key: str):
     return OpenAI(

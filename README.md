@@ -54,6 +54,8 @@ Set your OpenRouter API key as an environment variable before starting the app:
 set OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
+Or save the key in the app settings if you have a settings panel.
+
 If you use ngrok, the app will attempt to start a tunnel automatically. Optionally, save `ngrok` auth token into the database from the settings panel in the dashboard.
 
 ## Run the app

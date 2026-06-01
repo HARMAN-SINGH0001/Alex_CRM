@@ -14,10 +14,13 @@ from openai import OpenAI
 # ── OpenRouter client ────────────────────────────────────────────────
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 
-client = OpenAI(
-    api_key=OPENROUTER_API_KEY,
-    base_url="https://openrouter.ai/api/v1",
-)
+def make_openrouter_client(api_key: str):
+    return OpenAI(
+        api_key=api_key,
+        base_url="https://openrouter.ai/v1",
+    )
+
+client = make_openrouter_client(OPENROUTER_API_KEY)
 
 # Models to try in order — falls back on rate-limit/error
 GROQ_MODELS = [
@@ -28,6 +31,9 @@ GROQ_MODELS = [
 
 def groq_chat(messages, max_tokens=None, temperature=None, top_p=None, timeout=30):
     """Call OpenRouter with automatic model fallback on rate-limit errors."""
+    if not OPENROUTER_API_KEY:
+        raise RuntimeError("OpenRouter API key not configured. Set OPENROUTER_API_KEY or save the key in app settings.")
+
     kwargs = {"messages": messages}
     if max_tokens  is not None: kwargs["max_tokens"]  = max_tokens
     if temperature is not None: kwargs["temperature"] = temperature
@@ -131,8 +137,10 @@ def load_settings_from_db():
     or_key = cfg.get("openrouter_api_key", "") or OPENROUTER_API_KEY
     if or_key:
         OPENROUTER_API_KEY = or_key
-        client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
+        client = make_openrouter_client(OPENROUTER_API_KEY)
         print(f"[OpenRouter] Configured — key: {OPENROUTER_API_KEY[:12]}...")
+    else:
+        print("[OpenRouter] WARNING: No OPENROUTER_API_KEY found. Set the environment variable or save the key in settings.")
 
     ngrok_token = cfg.get("ngrok_token", "")
     if ngrok_token:
